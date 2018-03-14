@@ -1,0 +1,59 @@
+<div class="navbar">  <!--YLÄNAVIGAATIOPALKKI-->
+    <div class="navlinks">
+        <img id="position2" src="assets/images/Logo.png">
+
+        <button class="location" (click)="omaLokaatio()"><img id="position" src="assets/images/map.png"></button>
+
+
+        <input id="address" placeholder="Search by address..." autocorrect="off" autocapitalize="off" spellcheck="off"
+               type="text">
+    </div>
+</div>
+
+<div class="main">
+
+
+    <agm-map [latitude]="lat" [longitude]="lon" [zoom]="zoom" id="map" #map>
+
+        <agm-marker [latitude]="lat" [longitude]="lon" iconUrl="assets/images/user2.png"></agm-marker>
+
+        <sebm-google-maps-directions [origin]="origin" [destination]="destination" [travelmode]="travelmode"></sebm-google-maps-directions>
+
+        <agm-marker *ngFor="let asema of asemat" [latitude]="asema['AddressInfo'].Latitude"
+                    [longitude]="asema['AddressInfo'].Longitude" iconUrl="assets/images/CarMarker13.png">
+            <agm-info-window [disableAutoPan]="false" #infoWindow>
+                <div>
+                    {{asema['AddressInfo'].Title}}
+                </div>
+                <div>
+                    {{asema['AddressInfo'].AddressLine1}}
+                </div>
+            </agm-info-window>
+        </agm-marker>
+
+    </agm-map>
+
+
+    <nav class="linkkirajat"> <!--RESPONSIIVISET HAKUTULOKSET LATAUSPISTEISTÄ-->
+        <ul>
+            <li *ngFor="let asema of asemat; let i = index"  (click)="klikki($event, i)" class="dropdown"> <!--dropdown-->
+                <a class="dropbtn;" (click)="klikki($event, i)">{{asema['AddressInfo'].Title}}</a>
+                <!--ASEMAN NIMI-->
+
+                <button class="closebtn" (click)="sulje($event)">Close</button>
+
+                <div class="dropdown-content"> <!--YKSITTÄISET LATAUSASEMAN TIEDOT-->
+                    <h4>{{asema['AddressInfo'].AddressLine1}} <button class="navigation" (click)="navigoi($event)" >Navigate</button></h4>
+                    <p>Distance : {{matka(asema)}} miles</p>
+                    <p>Charge points : {{asema['NumberOfPoints']}}</p>
+                    <p>Usage Cost : {{asema['UsageCost']}}</p>
+                    <hr>
+                    <div *ngFor="let connection of asema['Connections']">
+                        <p>Connection Type: {{connection['ConnectionType'].Title}}</p>
+                        <p>Connection Level: {{connection['Level'].Title}}</p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</div>
